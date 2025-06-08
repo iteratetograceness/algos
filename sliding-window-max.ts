@@ -10,15 +10,12 @@ export const slidingWindowMax = (input: number[], k: number) => {
     // 1. when it's outside the current window (first while loop)
     // 2. when it's no longer relevant to us because it's smaller than the current value (second while loop)
 
-    while (candidates.length > 0 && candidates[0]! < start) {
+    if (candidates.length && candidates.at(0) < start) {
       // we shift (remove from head of array) when value at index is outside window
       candidates.shift()
     }
 
-    while (
-      candidates.length > 0 &&
-      input[candidates[candidates.length - 1]] <= current
-    ) {
+    while (candidates.length && input[candidates.at(-1)] <= current) {
       // we pop (remove from tail of array) when value at index is smaller than the current value (meaning it is no longer a valid candidate)
       candidates.pop()
     }
@@ -31,6 +28,43 @@ export const slidingWindowMax = (input: number[], k: number) => {
 
     // because candidates are in decreasing order, head of array is current window max
     result.push(input[candidates[0]])
+  }
+
+  return result
+}
+
+// we can make use of a ring buffer to improve the above solution's space complexity (Uint16Array is a true contiguous array)
+export const withRingBuffer = (input: number[], k: number) => {
+  const result: number[] = []
+  const candidates = new Uint32Array(k)
+
+  let head = 0,
+    tail = 0,
+    size = 0 // we have to keep track of size because we cannot reliably use tail === head to check if the queue is empty (because that is also true when the queue is full)
+
+  for (let i = 0; i < input.length; i++) {
+    const start = i - k + 1
+
+    if (size > 0 && candidates[head] < start) {
+      // move head forward if it's outside the current window
+      head = (head + 1) % k
+      size--
+    }
+
+    while (size > 0) {
+      const idx = (tail - 1 + k) % k
+      const lastValue = input[candidates[idx]]
+      if (lastValue > input[i]) break
+      tail = idx
+      size--
+    }
+
+    candidates[tail] = i
+    tail = (tail + 1) % k
+    size++
+
+    // head is current window max
+    result[i] = input[candidates[head]]
   }
 
   return result

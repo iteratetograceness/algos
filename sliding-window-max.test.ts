@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { slidingWindowMax } from './sliding-window-max'
+import { slidingWindowMax, withRingBuffer } from './sliding-window-max'
 
 const cases = [
   {
@@ -99,7 +99,7 @@ const cases = [
 describe('sliding window max', () => {
   cases.forEach(({ input, k, expected }) => {
     it(`array of size ${input.length} with k = ${k}`, () => {
-      const result = slidingWindowMax(input, k)
+      const result = slidingWindowMax(input, k) //
       expect(result).toEqual(expected)
     })
   })
@@ -148,5 +148,14 @@ describe('sliding window max', () => {
     const k = 1000
     const result = slidingWindowMax(input, k)
     expect(result).toEqual(input)
+  })
+})
+
+describe('sliding window max (ring buffer)', () => {
+  cases.forEach(({ input, k, expected }) => {
+    it(`array of size ${input.length} with k = ${k}`, () => {
+      const result = withRingBuffer(input, k) //
+      expect(result).toEqual(expected)
+    })
   })
 })
