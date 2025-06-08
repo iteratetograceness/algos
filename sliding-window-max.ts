@@ -34,6 +34,7 @@ export const slidingWindowMax = (input: number[], k: number) => {
 }
 
 // micro-optimization: use of ring buffer to avoid .shift() and .pop() + true contiguous array with Uint32Array
+// note: true performance benefit is not clear because we introduce the % operator (which is not an insignificant cost w.r.t. cpu cycles)
 export const withRingBuffer = (input: number[], k: number) => {
   const result: number[] = []
   const candidates = new Uint32Array(k)
