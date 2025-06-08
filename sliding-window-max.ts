@@ -33,7 +33,7 @@ export const slidingWindowMax = (input: number[], k: number) => {
   return result
 }
 
-// we can make use of a ring buffer to improve the above solution's space complexity (Uint16Array is a true contiguous array)
+// micro-optimization: use of ring buffer to avoid .shift() and .pop() + true contiguous array with Uint32Array
 export const withRingBuffer = (input: number[], k: number) => {
   const result: number[] = []
   const candidates = new Uint32Array(k)
